@@ -8,12 +8,12 @@ const numberWithCommas = (x) => {
 }
   
 const convertToBTC = (num, price, type) => {
-let value = Number(num.replace(/[^0-9.-]+/g,""))
-value = value / price
-if(type === 'SATS') {
-  return numberWithCommas(value * 100000000) + ' SATS'
-}
-return toBTC(value) + ' BTC'
+  let value = Number(num.replace(/[^0-9.-]+/g,""))
+  value = value / price
+  if(type === 'SATS') {
+    return numberWithCommas(value * 100000000) + ' SATS'
+  }
+  return toBTC(value) + ' BTC'
 }
 
 export const convert = (event, price, type) => {
@@ -22,4 +22,4 @@ export const convert = (event, price, type) => {
   curr.innerText = convertToBTC(theText, price, type)
 }
 
-  
+

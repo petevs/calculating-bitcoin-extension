@@ -1,5 +1,6 @@
 import { printLine } from './modules/print';
 import { convert } from './modules/convertPage'
+import moment from 'moment'
 
 console.log('Content script works!');
 console.log('Must reload extension for modifications to take effect. now');
@@ -21,6 +22,12 @@ const getCurrentPrice = async (currency) => {
 getCurrentPrice('cad')
 
 
+const getHistoricalPrice = async (from, to, currency) => {
+  const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`)
+  const { prices } = await response.json()
+  return prices[0][1]
+}
+
 //LISTEN FOR "CLICK + B" to Fire Conversion
 
 let keyHeld = ''
@@ -37,7 +44,12 @@ document.addEventListener('keyup', event => {
   }
 })
 
-document.querySelector('body').addEventListener('click', (event) => {
+const numberWithCommas = (x) => {
+  let num = Math.round(x)
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+document.querySelector('body').addEventListener('click', async (event) => {
 
   if(keyHeld === 's'){
     event.preventDefault()
@@ -47,5 +59,16 @@ document.querySelector('body').addEventListener('click', (event) => {
   if(keyHeld === 'b'){
     event.preventDefault()
     convert(event, currentPrice, 'BITCOIN')
+  }
+
+  if(keyHeld === 'd') {
+    event.preventDefault()
+    const currentTweet = event.target
+    const tweetDate = currentTweet.getAttribute('datetime')
+    const from = moment(tweetDate).unix()
+    const to = moment().unix()
+    const tweetText = currentTweet.innerText
+    const price = await getHistoricalPrice(from, to, 'usd')
+    currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)}`
   }
 })
