@@ -4,19 +4,19 @@ import './Popup.css';
 
 const Popup = () => {
 
-  const test = () => {
-    console.log('hello')
-  }
-
 
   const [currentTab, setCurrentTab] = useState(null)
 
 
   const handleClick = () => {
-    chrome.scripting.executeScript({
-      target: { tabId: currentTab.id },
-      function: test,
+    // chrome.scripting.executeScript({
+    //   target: { tabId: currentTab.id },
+    //   function: test,
+    // })
+    chrome.tabs.sendMessage(currentTab.id, 'cad', function(response) {
+      console.log(response)
     })
+
   }
 
   useEffect(() => {

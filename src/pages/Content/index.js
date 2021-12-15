@@ -8,6 +8,21 @@ console.log('Must reload extension for modifications to take effect. now');
 printLine("Using the 'printLine' function from the Print Module");
 
 
+//SET BASE PARAMETERS
+
+let selectedCurrency = 'usd'
+
+
+//EVENT LISTENER FOR MESSAGES FROM POP-UP
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    selectedCurrency = request
+  }
+)
+
+
+
 const baseURL = 'https://api.coingecko.com/api/v3/coins/bitcoin'
 let currentPrice = 0
 
@@ -23,7 +38,7 @@ getCurrentPrice('cad')
 
 
 const getHistoricalPrice = async (from, to, currency) => {
-  const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`)
+  const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=${selectedCurrency}&from=${from}&to=${to}`)
   const { prices } = await response.json()
   return prices[0][1]
 }
@@ -68,7 +83,7 @@ document.querySelector('body').addEventListener('click', async (event) => {
     const from = moment(tweetDate).unix()
     const to = moment().unix()
     const tweetText = currentTweet.innerText
-    const price = await getHistoricalPrice(from, to, 'usd')
+    const price = await getHistoricalPrice(from, to, selectedCurrency)
     currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)}`
   }
 })
