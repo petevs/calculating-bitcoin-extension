@@ -38,8 +38,14 @@ document.addEventListener('keyup', event => {
 })
 
 document.querySelector('body').addEventListener('click', (event) => {
+
+  if(keyHeld === 's'){
+    event.preventDefault()
+    convert(event, currentPrice, 'SATS')
+  }
+
   if(keyHeld === 'b'){
     event.preventDefault()
-    convert(event, currentPrice)
+    convert(event, currentPrice, 'BITCOIN')
   }
 })
