@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Calculating Bitcoin Extension",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "storage"],
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {

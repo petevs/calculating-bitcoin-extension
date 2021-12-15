@@ -21,5 +21,3 @@ export const convert = (event, price, type) => {
   let theText = curr.innerText
   curr.innerText = convertToBTC(theText, price, type)
 }
-
-

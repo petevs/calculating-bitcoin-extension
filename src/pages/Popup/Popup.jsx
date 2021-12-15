@@ -1,19 +1,26 @@
+import { Button } from '@mui/material';
+import { Box } from '@mui/system';
 import React, { useState, useEffect } from 'react';
-import Greetings from '../../containers/Greetings/Greetings';
+import CurrencySelect from './components/CurrencySelect';
+import Test from './components/Test';
 import './Popup.css';
+
 
 const Popup = () => {
 
 
   const [currentTab, setCurrentTab] = useState(null)
+  const [currency, setCurrency] = useState('usd')
 
 
-  const handleClick = () => {
+  const handleClick = (value) => {
     // chrome.scripting.executeScript({
     //   target: { tabId: currentTab.id },
     //   function: test,
     // })
-    chrome.tabs.sendMessage(currentTab.id, 'cad', function(response) {
+    setCurrency(value)
+    console.log(currency)
+    chrome.tabs.sendMessage(currentTab.id, currency, function(response) {
       console.log(response)
     })
 
@@ -31,10 +38,16 @@ const Popup = () => {
 
 
   return (
-    <div className="App">
-      <Greetings />
-      <button onClick={handleClick}>TEST</button>
-    </div>
+    <Box sx={{padding: '1rem'}}>
+      <Box>
+        <h2>Convert to Bitcoin</h2>
+      </Box>
+      <CurrencySelect 
+        currency={currency} 
+        setCurrency={setCurrency}
+        handleClick={handleClick} 
+      />
+    </Box>
   );
 };
 
