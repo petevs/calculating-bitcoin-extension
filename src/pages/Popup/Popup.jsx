@@ -8,13 +8,14 @@ const Popup = () => {
 
   const [curr, setCurr] = useState('usd')
 
-  const handleClick = () => {
-    chrome.storage.sync.set({currency: curr})
+  const handleClick = (value) => {
+    setCurr(value)
+    chrome.storage.sync.set({currency: value})
   }
 
   useEffect(() => {
     chrome.storage.sync.get(['currency'], (result) => setCurr(result.currency))
-  }, [])
+  }, [curr])
 
 
   return (
@@ -24,7 +25,6 @@ const Popup = () => {
       </Box>
       <CurrencySelect 
         currency={curr} 
-        setCurrency={setCurr}
         handleClick={handleClick} 
       />
     </Box>

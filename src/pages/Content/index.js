@@ -21,6 +21,7 @@ chrome.storage.sync.get(['currency'], function(result) {
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
   for (let [key, { newValue }] of Object.entries(changes)){
+    console.log(newValue)
     if(key === 'currency'){
       selectedCurrency = newValue
     }
@@ -51,9 +52,14 @@ getCurrentPrice(selectedCurrency)
 
 
 const getHistoricalPrice = async (from, to, currency) => {
-  const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=${selectedCurrency}&from=${from}&to=${to}`)
-  const { prices } = await response.json()
-  return prices[0][1]
+  try {
+    const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=${selectedCurrency}&from=${from}&to=${to}`)
+    const { prices } = await response.json()
+    return prices[0][1]
+  }
+  catch {
+    return 'Unable to Convert'
+  }
 }
 
 //KEYHELD LISTENERS 
@@ -104,6 +110,6 @@ document.querySelector('body').addEventListener('click', async (event) => {
     const tweetText = currentTweet.innerText
     currentTweet.innerText = `${tweetText} · Fetching...`
     const price = await getHistoricalPrice(from, to, selectedCurrency)
-    currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)} (${selectedCurrency})`
+    currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)} (${selectedCurrency.toUpperCase()})`
   }
 })
