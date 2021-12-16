@@ -8,7 +8,6 @@ import './Popup.css';
 
 const Popup = () => {
 
-
   const [currentTab, setCurrentTab] = useState(null)
   const [currency, setCurrency] = useState('usd')
 

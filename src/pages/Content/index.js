@@ -12,17 +12,26 @@ printLine("Using the 'printLine' function from the Print Module");
 
 let selectedCurrency = 'usd'
 
+chrome.storage.sync.get(['currency'], function(result) {
 
-chrome.storage.sync.get(['fiatCurrency'], function(result){
-  selectedCurrency = result.key
-  console.log(result.key)
-})
+  if(!result.currency) {
+    chrome.storage.sync.set({currency: 'usd'}, function() {
+      console.log('Set Key');
+    });
+  }
+
+  console.log('key is currently set to:', result)
+  selectedCurrency = result.currency
+});
 
 //EVENT LISTENER FOR MESSAGES FROM POP-UP
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     selectedCurrency = request
+    chrome.storage.sync.set({currency: request}, function() {
+      console.log('Set Key:', request);
+  })
   }
 )
 
@@ -39,7 +48,7 @@ const getCurrentPrice = async (currency) => {
   currentPrice = current_price[currency]
 }
 
-getCurrentPrice('cad')
+getCurrentPrice(selectedCurrency)
 
 
 const getHistoricalPrice = async (from, to, currency) => {
