@@ -1,17 +1,12 @@
-import { printLine } from './modules/print';
 import { convert } from './modules/convertPage'
 import moment from 'moment'
-
-// console.log('Content script works!');
-// console.log('Must reload extension for modifications to take effect. now');
-
-// printLine("Using the 'printLine' function from the Print Module");
-
 
 //SET BASE PARAMETERS
 
 let selectedCurrency = 'usd'
+let currentPrice = 0
 
+//If currency set in chrome storage get and assign to selectedCurrency, else set with default 'usd'
 chrome.storage.sync.get(['currency'], function(result) {
 
   if(!result.currency) {
@@ -22,35 +17,31 @@ chrome.storage.sync.get(['currency'], function(result) {
   selectedCurrency = result.currency
 });
 
+// STORAGE LISTENER: On change of storage if currency changes updated selected currency
+
 chrome.storage.onChanged.addListener(function (changes, namespace) {
-  for (let [key, { oldValue, newValue }] of Object.entries(changes)){
-    console.log(
-      `Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`
-    );
+  for (let [key, { newValue }] of Object.entries(changes)){
+    if(key === 'currency'){
+      selectedCurrency = newValue
+    }
   }
 })
 
 
 //EVENT LISTENER FOR MESSAGES FROM POP-UP
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    selectedCurrency = request
-    chrome.storage.sync.set({currency: request}, function() {
-      console.log('Set Key:', request);
-  })
-  }
-)
+// chrome.runtime.onMessage.addListener(
+//   function(request, sender, sendResponse) {
+//     selectedCurrency = request
+//     chrome.storage.sync.set({currency: request}, function() {
+//       console.log('Set Key:', request);
+//   })
+//   }
+// )
 
-
-
-const baseURL = 'https://api.coingecko.com/api/v3/coins/bitcoin'
-let currentPrice = 0
-
-
+//Get Current Price
 const getCurrentPrice = async (currency) => {
-  const response = await fetch(baseURL)
+  const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin')
   const { market_data } = await response.json()
   const { current_price } = market_data
   currentPrice = current_price[currency]
@@ -65,7 +56,7 @@ const getHistoricalPrice = async (from, to, currency) => {
   return prices[0][1]
 }
 
-//LISTEN FOR "CLICK + B" to Fire Conversion
+//KEYHELD LISTENERS 
 
 let keyHeld = ''
 
@@ -81,6 +72,8 @@ document.addEventListener('keyup', event => {
   }
 })
 
+//CLICK LISTENERS
+
 const numberWithCommas = (x) => {
   let num = Math.round(x)
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -88,24 +81,29 @@ const numberWithCommas = (x) => {
 
 document.querySelector('body').addEventListener('click', async (event) => {
 
+  //Convert to SATS if "CLICK + S"
   if(keyHeld === 's'){
     event.preventDefault()
     convert(event, currentPrice, 'SATS')
   }
 
+  //Convert to BTC if "CLICK + B"
   if(keyHeld === 'b'){
     event.preventDefault()
     convert(event, currentPrice, 'BITCOIN')
   }
 
+  //Convert to Date to Historical Price if "CLICK + D"
   if(keyHeld === 'd') {
     event.preventDefault()
+    console.log(selectedCurrency)
     const currentTweet = event.target
     const tweetDate = currentTweet.getAttribute('datetime')
     const from = moment(tweetDate).unix()
     const to = moment().unix()
     const tweetText = currentTweet.innerText
+    currentTweet.innerText = `${tweetText} · Fetching...`
     const price = await getHistoricalPrice(from, to, selectedCurrency)
-    currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)}`
+    currentTweet.innerText = `${tweetText} · 1 BTC  = $${numberWithCommas(price)} (${selectedCurrency})`
   }
 })

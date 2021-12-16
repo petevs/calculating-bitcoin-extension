@@ -6,35 +6,14 @@ import './Popup.css';
 
 const Popup = () => {
 
-  const [currentTab, setCurrentTab] = useState(null)
-  const [curr, setCurr] = useState(null)
+  const [curr, setCurr] = useState('usd')
 
-
-  chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-
-    }
-  )
-
-
-  const handleClick = (value) => {
-
-    setCurr(value)
-    chrome.storage.sync.set({currency: value})
-    chrome.tabs.sendMessage(currentTab.id, curr)
-    
-
+  const handleClick = () => {
+    chrome.storage.sync.set({currency: curr})
   }
 
   useEffect(() => {
-
-    const handleTab = async () => {
-      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-      setCurrentTab(tab)
-      };
-
-    handleTab()
-
+    chrome.storage.sync.get(['currency'], (result) => setCurr(result.currency))
   }, [])
 
 
