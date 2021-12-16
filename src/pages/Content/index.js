@@ -2,10 +2,10 @@ import { printLine } from './modules/print';
 import { convert } from './modules/convertPage'
 import moment from 'moment'
 
-console.log('Content script works!');
-console.log('Must reload extension for modifications to take effect. now');
+// console.log('Content script works!');
+// console.log('Must reload extension for modifications to take effect. now');
 
-printLine("Using the 'printLine' function from the Print Module");
+// printLine("Using the 'printLine' function from the Print Module");
 
 
 //SET BASE PARAMETERS
@@ -19,10 +19,18 @@ chrome.storage.sync.get(['currency'], function(result) {
       console.log('Set Key');
     });
   }
-
-  console.log('key is currently set to:', result)
   selectedCurrency = result.currency
 });
+
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)){
+    console.log(
+      `Storage key "${key}" in namespace "${namespace}" changed.`,
+      `Old value was "${oldValue}", new value is "${newValue}".`
+    );
+  }
+})
+
 
 //EVENT LISTENER FOR MESSAGES FROM POP-UP
 
