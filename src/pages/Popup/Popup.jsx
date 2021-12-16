@@ -2,6 +2,7 @@ import { Box } from '@mui/system';
 import React, { useState, useEffect } from 'react';
 import CurrencySelect from './components/CurrencySelect';
 import './Popup.css';
+import { Link, Typography } from '@mui/material'
 
 
 const Popup = () => {
@@ -19,14 +20,17 @@ const Popup = () => {
 
 
   return (
-    <Box sx={{padding: '1rem'}}>
+    <Box sx={{display: 'grid', padding: '1rem', gap: '1rem'}}>
       <Box>
-        <h2>Convert to Bitcoin</h2>
+      <Typography variant='h6' sx={{textAlign: 'center'}}>Convert to Bitcoin</Typography>
       </Box>
       <CurrencySelect 
         currency={curr} 
         handleClick={handleClick} 
       />
+      <Box sx={{textAlign: 'center'}}>
+        <Link href='https://coingecko.com' color='inherit' alt='coin gecko'>Prices provided by Coin Gecko</Link>
+      </Box>
     </Box>
   );
 };
