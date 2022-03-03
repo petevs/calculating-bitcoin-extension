@@ -8,6 +8,7 @@ import { Link, Typography } from '@mui/material'
 const Popup = () => {
 
   const [curr, setCurr] = useState('usd')
+  // const [currentPrice, setCurrentPrice] = useState(0)
 
   const handleClick = (value) => {
     setCurr(value)
@@ -16,13 +17,14 @@ const Popup = () => {
 
   useEffect(() => {
     chrome.storage.sync.get(['currency'], (result) => setCurr(result.currency))
-  }, [curr])
 
+  }, [curr])
 
   return (
     <Box sx={{display: 'grid', padding: '1rem', gap: '1rem'}}>
       <Box>
-      <Typography variant='h6' sx={{textAlign: 'center'}}>Convert to Bitcoin</Typography>
+      <Typography variant='h6' sx={{textAlign: 'center'}}>ConvertBit</Typography>
+      {/* <Typography variant='body-1' sx={{textAlign: 'center'}}>1 BTC = {'$'}{currentPrice}</Typography> */}
       </Box>
       <CurrencySelect 
         currency={curr} 
